@@ -135,11 +135,6 @@ with st.form("bss_form", clear_on_submit=False):
         if var == 'SBP': sbp_val = val
         if var == 'PULSERATE': pulse_val = val
 
-    # 🔔 Warning if TBSA < 20
-    if tbsa_raw is not None and not np.isnan(tbsa_raw) and tbsa_raw < 20:
-        st.warning("⚠️ This model is designed for patients with ≥20% TBSA burns. Predictions may not be valid for TBSA <20%.")
-    
-
     inhalation = st.radio(label_map['InhalationInjury'], ['Yes', 'No'],
                           index=0, horizontal=True, key='InhalationInjury')
     user_inputs['InhalationInjury'] = 1 if inhalation == 'Yes' else 0
