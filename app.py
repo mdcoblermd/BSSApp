@@ -123,17 +123,33 @@ with st.form("bss_form", clear_on_submit=False):
     sbp_val = np.nan
     pulse_val = np.nan
 
-    # Just one column now (no st.columns)
     st.subheader("Patient Info & Vitals")
 
-    tbsa_problem=False
-    for var in ['AGEYEARS','TOTALGCS','SBP', 'PULSERATE', 'TBSAforBaux']:
+    # Allow full range so we can detect <20 and warn
+    bounds['TBSAforBaux'] = (0, 100)
+
+    # Collect inputs
+    # NOTE: we’ll enter TBSA first to check and warn immediately
+    tbsa_raw = int_input_live(label_map['TBSAforBaux'], 'TBSAforBaux',
+                              min_val=bounds['TBSAforBaux'][0],
+                              max_val=bounds['TBSAforBaux'][1])
+
+    # Warn if < 20 and still bin for model use
+    tbsa_problem = (isinstance(tbsa_raw, (int, float))
+                    and not np.isnan(tbsa_raw) and tbsa_raw < 20)
+
+    if tbsa_problem:
+        st.warning("⚠️ This model is designed for patients with ≥20% TBSA burns. "
+                   "Predictions may be unreliable for TBSA < 20%.")
+
+    # Map to model bins (returns np.nan if out-of-range or missing)
+    tbsa_binned = bin_tbsa(tbsa_raw)
+    user_inputs['TBSAforBaux'] = tbsa_binned
+
+    # The rest of the inputs
+    for var in ['AGEYEARS','TOTALGCS','SBP','PULSERATE']:
         lo, hi = bounds[var]
-        if var == 'TBSAforBaux':
-            val = (int_input_live(label_map[var], var, min_val=lo, max_val=hi))
-            val = bin_tbsa(val)
-        else:
-            val = int_input_live(label_map[var], var, min_val=lo, max_val=hi)
+        val = int_input_live(label_map[var], var, min_val=lo, max_val=hi)
         user_inputs[var] = val
         if var == 'SBP': sbp_val = val
         if var == 'PULSERATE': pulse_val = val
@@ -142,10 +158,6 @@ with st.form("bss_form", clear_on_submit=False):
                           index=0, horizontal=True, key='InhalationInjury')
     user_inputs['InhalationInjury'] = 1 if inhalation == 'Yes' else 0
 
-    # 🔔 Warning if TBSA < 20
-    if tbsa_problem:
-        st.warning("⚠️ This model is designed for patients with ≥20% TBSA burns. Predictions not be valid for TBSA <20%.")
-    
     # ShockIndex
     if (isinstance(sbp_val, (int, float)) and isinstance(pulse_val, (int, float))
         and not np.isnan(sbp_val) and not np.isnan(pulse_val) and sbp_val != 0):
@@ -186,6 +198,7 @@ if st.session_state['last_pred'] is not None:
         f"<p style='font-size:36px;font-weight:bold;color:#d62728;'>{st.session_state['last_pred']:.1%}</p>",
         unsafe_allow_html=True
     )
+
 
 
 
