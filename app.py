@@ -121,38 +121,33 @@ with st.form("bss_form", clear_on_submit=False):
     sbp_val = np.nan
     pulse_val = np.nan
 
-    col1, _, col2 = st.columns([2, 0, 0])
-    
+    # Just one column now (no st.columns)
+    st.subheader("Patient Info & Vitals")
+    inhalation = st.radio(label_map['InhalationInjury'], ['Yes', 'No'],
+                           index=0, horizontal=True, key='InhalationInjury')
+    user_inputs['InhalationInjury'] = 1 if inhalation == 'Yes' else 0
 
-    with col1:
-        st.subheader("Patient Info & Vitals")
-        inhalation = st.radio(label_map['InhalationInjury'], ['Yes', 'No'],
-                               index=0, horizontal=True, key='InhalationInjury')
-        user_inputs['InhalationInjury'] = 1 if inhalation == 'Yes' else 0
-
-        for var in ['AGEYEARS','TOTALGCS','SBP', 'PULSERATE', 'TBSAforBaux']:
-            lo, hi = bounds[var]
-            if var == 'TBSAforBaux':
-                val = (int_input_live(label_map[var], var, min_val=lo, max_val=hi))
-                val = bin_tbsa(val)
-            else:
-                val = int_input_live(label_map[var], var, min_val=lo, max_val=hi)
-            user_inputs[var] = val
-            if var == 'SBP': sbp_val = val
-            if var == 'PULSERATE': pulse_val = val
-
-        # ShockIndex
-        if (isinstance(sbp_val, (int, float)) and isinstance(pulse_val, (int, float))
-            and not np.isnan(sbp_val) and not np.isnan(pulse_val) and sbp_val != 0):
-            user_inputs['ShockIndex'] = pulse_val / sbp_val
-        elif sbp_val == 0 or pulse_val == 0:
-            user_inputs['ShockIndex'] = 2.0
+    for var in ['AGEYEARS','TOTALGCS','SBP', 'PULSERATE', 'TBSAforBaux']:
+        lo, hi = bounds[var]
+        if var == 'TBSAforBaux':
+            val = (int_input_live(label_map[var], var, min_val=lo, max_val=hi))
+            val = bin_tbsa(val)
         else:
-            user_inputs['ShockIndex'] = np.nan
+            val = int_input_live(label_map[var], var, min_val=lo, max_val=hi)
+        user_inputs[var] = val
+        if var == 'SBP': sbp_val = val
+        if var == 'PULSERATE': pulse_val = val
 
-    with col2:
-        st.subheader("Summary")
+    # ShockIndex
+    if (isinstance(sbp_val, (int, float)) and isinstance(pulse_val, (int, float))
+        and not np.isnan(sbp_val) and not np.isnan(pulse_val) and sbp_val != 0):
+        user_inputs['ShockIndex'] = pulse_val / sbp_val
+    elif sbp_val == 0 or pulse_val == 0:
+        user_inputs['ShockIndex'] = 2.0
+    else:
+        user_inputs['ShockIndex'] = np.nan
 
+    st.subheader("Summary")
 
     # Build X in model's expected order (NaNs allowed)
     X = None
@@ -185,6 +180,7 @@ if st.session_state['last_pred'] is not None:
         f"<p style='font-size:36px;font-weight:bold;color:#d62728;'>{st.session_state['last_pred']:.1%}</p>",
         unsafe_allow_html=True
     )
+
 
 
 
