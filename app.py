@@ -123,7 +123,8 @@ with st.form("bss_form", clear_on_submit=False):
 
     # Just one column now (no st.columns)
     st.subheader("Patient Info & Vitals")
-    
+
+    tbsa_raw = None
     for var in ['AGEYEARS','TOTALGCS','SBP', 'PULSERATE', 'TBSAforBaux']:
         lo, hi = bounds[var]
         if var == 'TBSAforBaux':
@@ -183,6 +184,7 @@ if st.session_state['last_pred'] is not None:
         f"<p style='font-size:36px;font-weight:bold;color:#d62728;'>{st.session_state['last_pred']:.1%}</p>",
         unsafe_allow_html=True
     )
+
 
 
 
