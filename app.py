@@ -140,7 +140,7 @@ with st.form("bss_form", clear_on_submit=False):
 
     if tbsa_problem:
         st.warning("⚠️ This model is designed for patients with ≥20% TBSA burns. "
-                   "Predictions may be unreliable for TBSA < 20%.")
+                   "Predictions unreliable for TBSA < 20%, output will be nonsensical")
 
     # Map to model bins (returns np.nan if out-of-range or missing)
     tbsa_binned = bin_tbsa(tbsa_raw)
@@ -198,6 +198,7 @@ if st.session_state['last_pred'] is not None:
         f"<p style='font-size:36px;font-weight:bold;color:#d62728;'>{st.session_state['last_pred']:.1%}</p>",
         unsafe_allow_html=True
     )
+
 
 
 
