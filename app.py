@@ -11,6 +11,7 @@ import pickle
 import pandas as pd
 import numpy as np
 import re
+import math
 
 # ---------- Page setup ----------
 st.set_page_config(page_title="BSS", layout="centered")
@@ -141,7 +142,7 @@ with st.form("bss_form", clear_on_submit=False):
     user_inputs['InhalationInjury'] = 1 if inhalation == 'Yes' else 0
 
     # 🔔 Warning if TBSA < 20
-    if isnan(tbsa_raw):
+    if math.isnan(tbsa_raw):
         st.warning("⚠️ This model is designed for patients with ≥20% TBSA burns. Predictions not be valid for TBSA <20%.")
     
     # ShockIndex
@@ -184,6 +185,7 @@ if st.session_state['last_pred'] is not None:
         f"<p style='font-size:36px;font-weight:bold;color:#d62728;'>{st.session_state['last_pred']:.1%}</p>",
         unsafe_allow_html=True
     )
+
 
 
 
