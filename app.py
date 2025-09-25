@@ -107,7 +107,7 @@ label_map = {
 }
 
 bounds = {
-    'TBSAforBaux': (0, 100),
+    'TBSAforBaux': (20, 100),
     'TOTALGCS': (3, 15),
     'SBP': (0, 360),
     'PULSERATE': (0, 320),
@@ -180,6 +180,7 @@ if st.session_state['last_pred'] is not None:
         f"<p style='font-size:36px;font-weight:bold;color:#d62728;'>{st.session_state['last_pred']:.1%}</p>",
         unsafe_allow_html=True
     )
+
 
 
 
