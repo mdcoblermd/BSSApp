@@ -149,8 +149,6 @@ with st.form("bss_form", clear_on_submit=False):
     else:
         user_inputs['ShockIndex'] = np.nan
 
-    st.subheader("Summary")
-
     # Build X in model's expected order (NaNs allowed)
     X = None
     try:
@@ -182,6 +180,7 @@ if st.session_state['last_pred'] is not None:
         f"<p style='font-size:36px;font-weight:bold;color:#d62728;'>{st.session_state['last_pred']:.1%}</p>",
         unsafe_allow_html=True
     )
+
 
 
 
