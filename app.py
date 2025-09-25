@@ -123,10 +123,7 @@ with st.form("bss_form", clear_on_submit=False):
 
     # Just one column now (no st.columns)
     st.subheader("Patient Info & Vitals")
-    inhalation = st.radio(label_map['InhalationInjury'], ['Yes', 'No'],
-                           index=0, horizontal=True, key='InhalationInjury')
-    user_inputs['InhalationInjury'] = 1 if inhalation == 'Yes' else 0
-
+    
     for var in ['AGEYEARS','TOTALGCS','SBP', 'PULSERATE', 'TBSAforBaux']:
         lo, hi = bounds[var]
         if var == 'TBSAforBaux':
@@ -137,6 +134,11 @@ with st.form("bss_form", clear_on_submit=False):
         user_inputs[var] = val
         if var == 'SBP': sbp_val = val
         if var == 'PULSERATE': pulse_val = val
+
+    inhalation = st.radio(label_map['InhalationInjury'], ['Yes', 'No'],
+                          index=0, horizontal=True, key='InhalationInjury')
+    user_inputs['InhalationInjury'] = 1 if inhalation == 'Yes' else 0
+
 
     # ShockIndex
     if (isinstance(sbp_val, (int, float)) and isinstance(pulse_val, (int, float))
@@ -180,6 +182,7 @@ if st.session_state['last_pred'] is not None:
         f"<p style='font-size:36px;font-weight:bold;color:#d62728;'>{st.session_state['last_pred']:.1%}</p>",
         unsafe_allow_html=True
     )
+
 
 
 
